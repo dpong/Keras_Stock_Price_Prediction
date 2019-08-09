@@ -10,4 +10,5 @@ tensorflow2.0 有點猛，汲取了 keras 的親切，還可以直接創 dataset
 內容是利用過去60天的加權指數價格資料訓練，預測未來10天的收盤價。採用 LSTM。
 
 結果：
-
+![image]https://github.com/dpong/Keras_Stock_Price_Prediction/blob/master/Figure_1.png
+![image]https://github.com/dpong/Keras_Stock_Price_Prediction/blob/master/Figure_2.png
