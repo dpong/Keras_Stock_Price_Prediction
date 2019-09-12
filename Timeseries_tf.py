@@ -26,11 +26,11 @@ class Timeseries_tf():
         self.past_history = 90      #訓練用的過去天數
         self.future_target = 30     #預測未來天數
         self.col = 7
-        self.checkpoint_path = 'model_weights\weights'
+        self.checkpoint_path = 'model_weights'
         self.checkpoint_dir = os.path.dirname(self.checkpoint_path)
         self.check_index = self.checkpoint_path + '.index'
         self.model = self.build_model()
-        self.epochs = 100
+        self.epochs = 500
         self.epoch_loss_avg = tf.keras.metrics.Mean()
         self.optimizer = tf.optimizers.Adam(learning_rate=0.0001, epsilon=0.000065)
         self.loss_function = tf.keras.losses.MSE
@@ -138,11 +138,11 @@ class Timeseries_tf():
         print(self.val_data)
         for x, y in self.val_data.take(3):
             raw_predict = self.model(x)
-            predict = raw_predict.numpy() * self.close_std + self.close_mean
+            predict = raw_predict.numpy() # * self.close_std + self.close_mean
             x = x.numpy()
             y = y.numpy()
-            x_p = x[1][:,0] * self.close_std + self.close_mean
-            y_p = y[1] * self.close_std + self.close_mean
+            x_p = x[1][:,0] #* self.close_std + self.close_mean
+            y_p = y[1] #* self.close_std + self.close_mean
             plot = v.show_plot(x_p, y_p, predict[1])
         
 
@@ -177,7 +177,7 @@ if __name__=='__main__':
     v = Visualize()
     t.get_data()
     t.handle_data()
-    t.training()
+    #t.training()
     t.prediction_test()
 
 
