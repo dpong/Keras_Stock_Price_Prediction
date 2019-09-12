@@ -30,7 +30,7 @@ class Timeseries_tf():
         self.checkpoint_dir = os.path.dirname(self.checkpoint_path)
         self.check_index = self.checkpoint_path + '.index'
         self.model = self.build_model()
-        self.epochs = 50
+        self.epochs = 100
         self.epoch_loss_avg = tf.keras.metrics.Mean()
         self.optimizer = tf.optimizers.Adam(learning_rate=0.0001, epsilon=0.000065)
         self.loss_function = tf.keras.losses.MSE
@@ -69,11 +69,8 @@ class Timeseries_tf():
         #target是Close, 就是dataset的第0個
         x_train, y_train = self._multivariate_data(dataset, dataset[:,0], 0, TRAIN_SPLIT)
         x_val, y_val = self._multivariate_data(dataset, dataset[:,0], TRAIN_SPLIT, None)
-        self.train_data = tf.data.Dataset.from_tensor_slices((x_train, y_train))
-        self.train_data = self.train_data.batch(128)
-        self.val_data = tf.data.Dataset.from_tensor_slices((x_val, y_val))
-        self.val_data = self.val_data.batch(128)
-        
+        self.train_data = tf.data.Dataset.from_tensor_slices((x_train, y_train)).shuffle(10000).batch(128)
+        self.val_data = tf.data.Dataset.from_tensor_slices((x_val, y_val)).shuffle(10000).batch(128)
 
 
     def build_GRU_model(self):
@@ -106,9 +103,8 @@ class Timeseries_tf():
         con2 = Conv1D(64 , 10, padding='causal')(con1_norm_act)
         con2_norm = BatchNormalization()(con2)
         con2_norm_act = Activation('elu')(con2_norm)
-        pool_avg = GlobalAveragePooling1D()(con2_norm_act)
-        #pool_max = MaxPooling1D(pool_size=5, strides=1, padding='same')(con2_norm_act)
-        flat = Flatten()(pool_avg)
+        pool_max = MaxPooling1D(pool_size=5, strides=1, padding='same')(con2_norm_act)
+        flat = Flatten()(pool_max)
         d1 = Dense(self.future_target, activation='relu')(flat)
         model = Model(inputs=data_input, outputs=d1)
         if os.path.exists(self.check_index):
