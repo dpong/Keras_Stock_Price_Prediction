@@ -29,8 +29,8 @@ class Timeseries_tf():
         self.checkpoint_path = 'model_weights/weights'
         self.checkpoint_dir = os.path.dirname(self.checkpoint_path)
         self.check_index = self.checkpoint_path + '.index'
-        self.model = self.build_GRU_model()
-        self.epochs = 500
+        self.model = self.build_model()
+        self.epochs = 1000
         self.epoch_loss_avg = tf.keras.metrics.Mean()
         self.optimizer = tf.optimizers.Adam(learning_rate=0.0001, epsilon=0.000065)
         self.loss_function = tf.keras.losses.MSE
@@ -107,7 +107,10 @@ class Timeseries_tf():
         con3 = Conv1D(64 , 10, padding='causal')(pool_max)
         con3_norm = BatchNormalization()(con3)
         con3_norm_act = Activation('elu')(con3_norm)
-        pool_max_2 = MaxPooling1D(pool_size=5, strides=1, padding='same')(con3_norm_act)
+        con4 = Conv1D(64 , 10, padding='causal')(con3_norm_act)
+        con4_norm = BatchNormalization()(con4)
+        con4_norm_act = Activation('elu')(con4_norm)
+        pool_max_2 = MaxPooling1D(pool_size=5, strides=1, padding='same')(con4_norm_act)
         flat = Flatten()(pool_max_2)
         d1 = Dense(self.future_target, activation='relu')(flat)
         model = Model(inputs=data_input, outputs=d1)
@@ -139,15 +142,14 @@ class Timeseries_tf():
         self.model.save_weights(self.checkpoint_path, save_format='tf')
 
     def prediction_test(self):
-        print(self.val_data)
         for x, y in self.val_data.take(10):
             raw_predict = self.model(x)
             predict = raw_predict.numpy() # * self.close_std + self.close_mean
             x = x.numpy()
             y = y.numpy()
-            x_p = x[1][:,0] #* self.close_std + self.close_mean
-            y_p = y[1] #* self.close_std + self.close_mean
-            plot = v.show_plot(x_p, y_p, predict[1])
+            x_p = x[2][:,0] #* self.close_std + self.close_mean
+            y_p = y[2] #* self.close_std + self.close_mean
+            plot = v.show_plot(x_p, y_p, predict[2])
         
 
 class Visualize():
@@ -181,8 +183,8 @@ if __name__=='__main__':
     v = Visualize()
     t.get_data()
     t.handle_data()
-    t.training()
-    #t.prediction_test()
+    #t.training()
+    t.prediction_test()
 
 
 
