@@ -11,7 +11,7 @@ def get_crypto_from_api(ticker, data_quantity, frequency):
     # 時間轉換
     df['Date'] = '0'
     for i in range(data_quantity+1):
-        df.at[i,'Date'] = str(datetime.datetime.fromtimestamp(df.at[i,'time']))
+        df.at[i,'Date'] = datetime.datetime.fromtimestamp(df.at[i,'time'])
     # 成交量計算
     df['Volume'] = df['volumeto'] - df['volumefrom']
     df.drop(columns={'volumefrom','volumeto','time'},inplace=True)
