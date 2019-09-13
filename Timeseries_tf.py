@@ -26,7 +26,7 @@ class Timeseries_tf():
         self.past_history = 90      #訓練用的過去天數
         self.future_target = 30     #預測未來天數
         self.col = 7
-        self.checkpoint_path = 'model_weights'
+        self.checkpoint_path = 'model_weights/weights'
         self.checkpoint_dir = os.path.dirname(self.checkpoint_path)
         self.check_index = self.checkpoint_path + '.index'
         self.model = self.build_model()
@@ -104,7 +104,11 @@ class Timeseries_tf():
         con2_norm = BatchNormalization()(con2)
         con2_norm_act = Activation('elu')(con2_norm)
         pool_max = MaxPooling1D(pool_size=5, strides=1, padding='same')(con2_norm_act)
-        flat = Flatten()(pool_max)
+        con3 = Conv1D(64 , 10, padding='causal')(pool_max)
+        con3_norm = BatchNormalization()(con3)
+        con3_norm_act = Activation('elu')(con3_norm)
+        pool_max_2 = MaxPooling1D(pool_size=5, strides=1, padding='same')(con3_norm_act)
+        flat = Flatten()(pool_max_2)
         d1 = Dense(self.future_target, activation='relu')(flat)
         model = Model(inputs=data_input, outputs=d1)
         if os.path.exists(self.check_index):
@@ -136,7 +140,7 @@ class Timeseries_tf():
 
     def prediction_test(self):
         print(self.val_data)
-        for x, y in self.val_data.take(3):
+        for x, y in self.val_data.take(10):
             raw_predict = self.model(x)
             predict = raw_predict.numpy() # * self.close_std + self.close_mean
             x = x.numpy()
@@ -177,8 +181,8 @@ if __name__=='__main__':
     v = Visualize()
     t.get_data()
     t.handle_data()
-    #t.training()
-    t.prediction_test()
+    t.training()
+    #t.prediction_test()
 
 
 
