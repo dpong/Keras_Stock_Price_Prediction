@@ -29,7 +29,7 @@ class Timeseries_tf():
         self.checkpoint_path = 'model_weights/weights'
         self.checkpoint_dir = os.path.dirname(self.checkpoint_path)
         self.check_index = self.checkpoint_path + '.index'
-        self.model = self.build_model()
+        self.model = self.build_GRU_model()
         self.epochs = 500
         self.epoch_loss_avg = tf.keras.metrics.Mean()
         self.optimizer = tf.optimizers.Adam(learning_rate=0.0001, epsilon=0.000065)
