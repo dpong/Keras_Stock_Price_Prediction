@@ -23,8 +23,8 @@ tf.compat.v1.Session(config=config)
 class Timeseries_tf():
     def __init__(self):
         self.df = pd.DataFrame()
-        self.past_history = 90      #訓練用的過去天數
-        self.future_target = 30     #預測未來天數
+        self.past_history = 60      #訓練用的過去天數
+        self.future_target = 14     #預測未來天數
         self.col = 7
         self.checkpoint_path = 'model_weights/weights'
         self.checkpoint_dir = os.path.dirname(self.checkpoint_path)
@@ -183,8 +183,8 @@ if __name__=='__main__':
     v = Visualize()
     t.get_data()
     t.handle_data()
-    #t.training()
-    t.prediction_test()
+    t.training()
+    #t.prediction_test()
 
 
 
