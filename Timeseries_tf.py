@@ -25,7 +25,7 @@ class Timeseries_tf():
         self.df = pd.DataFrame()
         self.past_history = 60      #訓練用的過去天數
         self.future_target = 14     #預測未來天數
-        self.col = 7
+        self.col = 5
         self.checkpoint_path = 'model_weights/weights'
         self.checkpoint_dir = os.path.dirname(self.checkpoint_path)
         self.check_index = self.checkpoint_path + '.index'
@@ -38,8 +38,6 @@ class Timeseries_tf():
 
     def get_data(self):
         self.df = get_crypto_from_api('BTC', 2000, 'day')
-        self.df['HL_PCT'] = (self.df['High']-self.df['Low'])/self.df['Close'] * 100
-        self.df['PCT_change'] = (self.df['Close']-self.df['Open'])/self.df['Open'] * 100
         
     def _multivariate_data(self, dataset, target, start_index, end_index, single_step=False):
         #整理資料
@@ -147,9 +145,9 @@ class Timeseries_tf():
             predict = raw_predict.numpy() # * self.close_std + self.close_mean
             x = x.numpy()
             y = y.numpy()
-            x_p = x[2][:,0] #* self.close_std + self.close_mean
-            y_p = y[2] #* self.close_std + self.close_mean
-            plot = v.show_plot(x_p, y_p, predict[2])
+            x_p = x[6][:,0] #* self.close_std + self.close_mean
+            y_p = y[6] #* self.close_std + self.close_mean
+            plot = v.show_plot(x_p, y_p, predict[6])
         
 
 class Visualize():
@@ -183,8 +181,8 @@ if __name__=='__main__':
     v = Visualize()
     t.get_data()
     t.handle_data()
-    t.training()
-    #t.prediction_test()
+    #t.training()
+    t.prediction_test()
 
 
 
