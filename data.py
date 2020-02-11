@@ -13,9 +13,9 @@ def get_crypto_from_api(ticker, data_quantity, frequency):
     for i in range(data_quantity+1):
         df.at[i,'Date'] = datetime.datetime.fromtimestamp(df.at[i,'time'])
     # 成交量計算
-    df['Volume'] = df['volumeto'] - df['volumefrom']
+    df['volume'] = df['volumeto'] - df['volumefrom']
     df.drop(columns={'volumefrom','volumeto','time'},inplace=True)
-    df.rename(columns={'close':"Close", 'open':"Open", 'high':'High', 'low':"Low"}, inplace=True)
+    #df.rename(columns={'close':"Close", 'open':"Open", 'high':'High', 'low':"Low"}, inplace=True)
     df = df.set_index('Date', drop=True)
     return df
 
@@ -28,5 +28,5 @@ if __name__=='__main__':
     ticker = 'ETH'
     data_quantity = 400
     df = get_crypto_from_api(ticker, data_quantity, frequency)
-    df_to_csv(df, ticker, data_quantity, frequency)
-
+    #df_to_csv(df, ticker, data_quantity, frequency)
+    print(df)
